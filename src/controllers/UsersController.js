@@ -66,6 +66,44 @@ class UsersController {
 
     return res.status(200).json();
   }
-}
 
+  async getUsers(req, res){
+    const database = await sqliteConnection();
+    const checkUsers = await database.get("SELECT * FROM users")
+
+    const {id} = req.params;
+
+    const checkUserId = await database.get(`SELECT * FROM users WHERE id = ?`, [id]);
+
+    if(!checkUsers){
+      throw new AppError("Não existe usuário!")
+    }
+    if (checkUserId){
+      const usersId = await database.get(`SELECT * FROM users WHERE id = ?`, [id])
+      return res.status(200).json({usersId})
+    }
+    if (!checkUserId){
+      throw new AppError("Usuário com esse ID não existe!")
+    }
+    const users = await database.all("SELECT * FROM users");
+    return res.status(200).json(users);
+  }
+
+  async deleteUsers(req, res){
+    const {id} = req.params;
+    const database = await sqliteConnection();
+
+    const chekUserDelete = await database.get("DELETE FROM users WHERE id = ?", [id])
+
+    if(chekUserDelete){
+      await database.delete(`DELETE FROM users ${id}`)
+     
+    }
+    if (!chekUserDelete){
+      throw new AppError("Usuário não existe !")
+    }
+    return res.status(200).json();
+    
+  }
+}
 module.exports = UsersController;
