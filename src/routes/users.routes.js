@@ -1,9 +1,13 @@
 const { Router } = require("express");
+const multer = require("multer");
+const uploadConfig = require("../configs/upload");
 
 const UsersController = require("../controllers/UsersController");
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated')
 
 const usersRoutes = Router();
+const upload = multer(uploadConfig.MULTER)
+
 
 const usersController = new UsersController();
 
@@ -12,6 +16,11 @@ usersRoutes.put("/", ensureAuthenticated, usersController.update);
 usersRoutes.get("/", usersController.getUsers);
 usersRoutes.get("/:id", usersController.getUsers);
 usersRoutes.delete("/:id", usersController.deleteUsers);
+usersRoutes.patch("/avatar",ensureAuthenticated, upload.single("avatar"), (req, res) => {
+    console.log(req.file.filename)
+    res.json()
+});
+
 
 
 module.exports = usersRoutes;
