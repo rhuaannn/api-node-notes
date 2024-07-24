@@ -20,7 +20,7 @@ class UserAvatarController {
     user.avatar = filename;
     await knex("users").update(user).where({ id: user_id });;
 
-    return response.json(user)
+    return res.json(user)
   }
 }
 
